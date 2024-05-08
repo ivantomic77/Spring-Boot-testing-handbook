@@ -1,6 +1,8 @@
 = Testing Spring Boot applications
+:toc:
 
 This is a guide and an introduction to Spring Boot testing. You will learn the essential concepts to test your code.
+
 
 == Prep
 
@@ -27,7 +29,7 @@ Now you know WHY, let's go to HOW.
 The first important topic is to understand the scope of the testing class.
 Your choice here will determine the availability of some fancy features that spring and spring boot offer like dependency injection, properties (.yml file), ...
 
-=== I want it all
+=== I want it all a.k.a. @SpringBootTest
 
 Take a look at the link:src/test/java/dev/tomic/testingmasterclass/TestingMasterclassApplicationTests.java[auto generated class by spring boot.]
 
@@ -52,7 +54,14 @@ but it can slow down your tests because the context load is slow.
 In case you want to test just one component (class) or a small number of them,
 it is better to create the classes we need by ourselves.
 
+Look at link:src/test/java/dev/tomic/testingmasterclass/chapter2/Ch2UserServiceTest.java[the example.]
+
 [,java]
 ----
 include::src/test/java/dev/tomic/testingmasterclass/chapter2/Ch2UserServiceTest.java[lines=7..20]
 ----
+
+If you go through the code of the classes `Ch2UserService` and `Ch2UserRepository` you will recognize a familiar pattern of repository->service connection.
+
+Notice that this class doesn't have `@SpringBootTest` annotation,
+this means that we need to configure every class or component we want to use because we can't inject it from Spring context.
