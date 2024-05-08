@@ -1,0 +1,48 @@
+= Testing Spring Boot applications
+
+This is a guide and an introduction to Spring Boot testing. You will learn the essential concepts to test your code.
+
+== Prep
+
+To start learning clone this project and run it in your favourite code editor.
+
+.Run all tests
+NOTE: Run the command: `./gradlew test`
+
+== Section 1. Importance of testing
+
+As a programmer your biggest accomplishment is to create a feature that is going to be loved by the users.
+You can't accomplish that with buggy and unpredictable code. The solution to that problem would be to test your code in various ways.
+
+It is not as simple as just striving to get that 100% coverage on your code quality tool. Testing should be used as a tool to help you spot the bugs you accidentally created by quickly writing that code for the new feature because you have to dive deep into the code to test it properly.
+
+Another common use case of tests is to speed up the coding process.
+_What do I mean by this?_ Let's say you are adding some option to the existing codebase. If you wanted to see if the functionality works you would probably try to start the service up and use the API to get the result. That is fine BUT it can slow you down and probably cost you hours. The better option would be to write the test that covers your target result and run it when you think the feature is ready. Congrats, you just saved a few hours, and you will probably finish this sprint😊.
+
+Now you know the WHY, let's go to HOW.
+
+== Section 2. Testing class scopes
+
+The first important topic is to understand the scope of the testing class.
+
+Take a look at the link:src/test/java/dev/tomic/testingmasterclass/TestingMasterclassApplicationTests.java[auto generated class by spring boot.]
+
+[,java]
+----
+@SpringBootTest
+class TestingMasterclassApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
+----
+
+IMPORTANT: Notice how it is annotated with `@SpringBootTest`.
+
+This annotation will on test startup load Spring Boot context. In plain words it will run the application similar to the "production" one. This means that you will have your beans and components (services, controllers, repos, *values from app.yml*, ...) loaded and ready for testing.
+
+So now you may ask: _What does this initial test do? It is empty._
+
+Test `contextLoads` will run and start the application (run the spring boot context). That means that if the application doesn't want to start it will fail, and you will know that you made a mistake in code or just wrongly configured it.
