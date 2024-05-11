@@ -17,10 +17,18 @@ As a programmer, your biggest accomplishment is to create a feature that is goin
 You can't achieve that with buggy and unpredictable code.
 The solution to that problem would be to test your code in various ways.
 
-It is not as simple as just striving to get that 100% coverage on your code quality tool. Testing should be used as a tool to help you spot the bugs you accidentally created by quickly writing that code for the new feature because you have to dive deep into the code to test it properly.
+It is not as simple as just striving to get that 100% coverage on your code quality tool.
+Testing should be used to check if you broke the functionality by modifying existing code or to help you spot the bugs you accidentally created by writing the new feature.
 
 Another common use case of tests is to speed up the coding process.
-_What do I mean by this?_ Let's say you are adding some option to the existing codebase. If you wanted to see if the functionality works you would probably try to start the service up and use the API to get the result. That is fine BUT it can slow you down and probably cost you hours. The better option would be to write the test that covers your target result and run it when you think the feature is ready. Congrats, you just saved a few hours, and you will probably finish this sprint😊.
+_What do I mean by this?
+Let's say you are adding some option to the existing codebase.
+If you wanted to see if the functionality works,
+you would probably try to start the service up and use the API to get the result.
+That is fine, BUT it can slow you down and probably cost you hours.
+The better option would be to write the test that covers your target result
+and run it when you think the feature is ready.
+Congrats, you just saved a few hours, and you will probably finish this sprint😊.
 
 Now you know WHY, let's go to HOW.
 
@@ -49,7 +57,7 @@ Test `contextLoads` will run and start the application (run the spring boot cont
 This works if you want to test the whole operation that uses a lot of components,
 but it can slow down your tests because the context load is slow.
 
-=== I can be modest
+=== I try to be modest
 
 In case you want to test just one component (class) or a small number of them,
 it is better to create the classes we need by ourselves.
@@ -65,3 +73,57 @@ If you go through the code of the classes `Ch2UserService` and `Ch2UserRepositor
 
 Notice that this class doesn't have `@SpringBootTest` annotation,
 this means that we need to configure every class or component we want to use because we can't inject it from Spring context.
+
+TIP: If you are using @Value annotation to pull variables from application.properties or application.yml, it won't work if the context is not loaded. You can use methods like `ReflectionTestUtils.setField()` to directly inject value into that variable.
+
+== Section 3. JUnit testing framework
+
+JUnit makes testing easier by bringing us basic tools like assertions, test runners, reporting, ...
+
+In the previous chapter, we encountered one of the annotations which JUnit framework provides.
+That would be `@Test` annotation.
+This annotation tells the JUnit framework which method should be run as a test.
+
+This is just a glimpse into JUnit's capabilities but enough to get you started.
+I will not mention every method that exists, you can find more in the link:https://junit.org/junit5/docs/current/user-guide[official documentation] or in the more complex examples of this guide.
+
+=== Example class
+
+The Class we are testing is used to create Driving licenses and store them in the list to replicate the use of a database.
+The method throws exception if we try to create a license for the user which is less than 18 years old.
+
+Inspect the `Ch3DrivingLicenseCreator` logic to improve your understanding of the following tests.
+
+Let's look at the link:src/test/java/dev/tomic/testingmasterclass/chapter3/Ch3DrivingLicenseCreatorTest.java[DrivingLicenseCreatorTest] class.
+[,java]
+----
+include::src/test/java/dev/tomic/testingmasterclass/chapter3/Ch3DrivingLicenseCreatorTest.java[lines=9..]
+----
+
+=== Assertions
+
+To verify if the result of a function is correct, we are using assertions.
+They signal to JUnit runner if the test is successful or not.
+
+To check if the result is the same as expected value we will use `assertEquals(T expected, T actual)`.
+Function `assertEquals` can take any type of argument and uses different logic for every type.
+
+TIP: In the case you want to compare objects (including your custom class models), *it will compare reference* and will not do deep compare. That means that even if the object is exactly the same to your eye, it can be a different object in memory and thus won't pass this check.
+
+To verify that the user can't create the license with the age less than required (18) we will use `assertThrows` method.
+We need to provide the exception that we expect and executable (callback function).
+
+=== Parameterized Tests
+
+Parameterized tests are a useful way to check the result of the function in more than one case.
+It runs the test and uses different parameters that we specified.
+It is a cleaner way than manually writing every call and assert.
+
+In our case, we are using CSV source, but there are other available ways to do it in terms of the source (CSV, value, enum, ...) and way (file and directly in test class).
+
+=== Test lifecycles
+
+For this test, we do not need Spring Context, so we are constructing class in the setup method which is annotated with `@BeforeEach`. In our case, it will construct the new instance of the calculator before every test.
+In general, this annotation is useful if we need to do some configuration before every test.
+
+TIP: *The JUnit runner will make a new instance of the test class after every test even if we don't do it ourselves.* I could have used basic constructor and the DrivingLicenseCreator class would be recreated before every test.
